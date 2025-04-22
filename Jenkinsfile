@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        maven 'Maven 3.8.6'  // Make sure it's exactly like this in Jenkins config
+        maven 'Maven 3.8.6'
     }
 
     stages {
@@ -20,10 +20,10 @@ pipeline {
 
         stage('Docker Build & Push') {
             steps {
-                script {
-                    sh "docker login -u talgatdilmurat -p Tali960211"
-                    sh "docker build -t talgatdilmurat/spring-petclinic ."
-                    sh "docker push talgatdilmurat/spring-petclinic"
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    bat 'docker login -u %DOCKER_USER% -p %DOCKER_PASS%'
+                    bat 'docker build -t talgatdilmurat/spring-petclinic .'
+                    bat 'docker push talgatdilmurat/spring-petclinic'
                 }
             }
         }
@@ -31,7 +31,7 @@ pipeline {
 
     post {
         success {
-            echo '✅ Build was successful.'
+            echo '✅ Build and push succeeded.'
         }
         failure {
             echo '❌ Build failed.'
