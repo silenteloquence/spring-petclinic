@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        maven 'Maven 3.8.6'
+        maven 'Maven_3.8.6'
     }
 
     stages {
@@ -13,16 +13,27 @@ pipeline {
         }
 
         stage('Build') {
-    steps {
-        bat 'mvn clean install'
-    }
-}
+            steps {
+                bat 'mvn clean install'
+            }
+        }
 
+        stage('Docker Build & Push') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    script {
+                        sh 'docker login -u $DOCKER_USER -p $DOCKER_PASS'
+                        sh 'docker build -t talgatdilmurat/spring-petclinic .'
+                        sh 'docker push talgatdilmurat/spring-petclinic'
+                    }
+                }
+            }
+        }
     }
 
     post {
         success {
-            echo '✅ Build was successful.'
+            echo '✅ Build and Docker push successful!'
         }
         failure {
             echo '❌ Build failed.'
