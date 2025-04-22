@@ -5,12 +5,12 @@ pipeline {
         maven 'Maven 3.8.6'
     }
 
-    stages {
-        stage('Checkout') {
-            steps {
-                git 'https://github.com/silenteloquence/spring-petclinic.git'
-            }
-        }
+    stage('Checkout') {
+    steps {
+        git branch: 'main', url: 'https://github.com/silenteloquence/spring-petclinic.git'
+    }
+}
+
 
         stage('Build') {
             steps {
